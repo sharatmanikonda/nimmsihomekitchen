@@ -6,7 +6,11 @@ export const KITCHEN = {
   tagline: 'Homemade meals with authentic flavours',
   // Nimmi's WhatsApp number with country code, digits only.
   whatsappNumber: '919652318485',
-  // Where the daily menu is loaded from (see public/todays-menu.json).
+  // Nimmi's Google Sheet for the daily menu: the long id between /d/ and /edit in its URL.
+  // The sheet must be shared as "Anyone with the link: Viewer". See sheet-template/README.md.
+  // Leave empty to load public/todays-menu.json instead.
+  menuSheetId: '',
+  // Used only when menuSheetId is empty.
   todaysMenuUrl: `${BASE}todays-menu.json`,
   deliveryNote: 'Delivery charges, if any, are confirmed on WhatsApp along with your order.',
   paymentNote: 'Pay by UPI after Nimmi accepts your order.',

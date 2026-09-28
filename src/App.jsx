@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { rollDays, rollMenu, useNow, useTodaysMenu } from './lib/helpers';
+import { nextMenuDate, useNow, useTodaysMenu } from './lib/helpers';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import HowItWorks from './components/HowItWorks';
@@ -37,10 +37,9 @@ export default function App() {
   const route = useHashRoute();
   const { status, menu: posted } = useTodaysMenu();
   const now = useNow();
-  // Once the posted cutoff passes, carry the menu over to the next day automatically.
-  // Keyed on the day count so the menu object only changes when the dates actually move.
-  const shift = rollDays(posted, now);
-  const menu = useMemo(() => rollMenu(posted, shift), [posted, shift]);
+  // A menu is shown only until its cutoff. After that the site waits for Nimmi to post the next one.
+  const menu = posted && now < new Date(posted.cutoff).getTime() ? posted : null;
+  const nextDate = menu ? null : nextMenuDate(posted, now);
   const [cart, setCart] = useState({});
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [toast, setToast] = useState(null);
@@ -90,7 +89,7 @@ export default function App() {
 
   if (route === '#/post-menu') return <PostMenu current={menu} />;
 
-  const shared = { menu, status, now, ordersOpen, cutoffMs };
+  const shared = { menu, nextDate, status, now, ordersOpen, cutoffMs };
 
   return (
     <>

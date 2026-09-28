@@ -5,14 +5,14 @@ import AddControl, { VegMark } from './AddControl';
 
 const catLabel = Object.fromEntries(CATEGORIES.map((c) => [c.id, c.label]));
 
-export default function TodaysMenu({ menu, status, ordersOpen, cart, setQty }) {
+export default function TodaysMenu({ menu, nextDate, status, ordersOpen, cart, setQty }) {
   return (
     <section className="section" id="today">
       <div className="wrap">
         <div className="section-head">
           <div>
             <span className="eyebrow">Today's menu</span>
-            <h2 className="h-display">{menu ? `For ${formatDay(menu.deliveryDate)}` : "What's cooking"}</h2>
+            <h2 className="h-display">{status === 'loading' ? "What's cooking" : `For ${formatDay(menu ? menu.deliveryDate : nextDate)}`}</h2>
           </div>
           {menu && (
             <p className="muted">
@@ -28,21 +28,12 @@ export default function TodaysMenu({ menu, status, ordersOpen, cart, setQty }) {
           <div className="closed-banner">
             <MessageCircle size={22} />
             <div>
-              Today's menu hasn't been posted yet.{' '}
+              <b>Menu coming soon.</b> Nimmi hasn't posted what she's cooking for {formatDay(nextDate)} yet. Check back
+              soon, or{' '}
               <a href={waLink("Hi Nimmi, what's on the menu next?")} target="_blank" rel="noreferrer">
-                Ask on WhatsApp
+                ask on WhatsApp
               </a>
-              .
-            </div>
-          </div>
-        )}
-
-        {menu && !ordersOpen && (
-          <div className="closed-banner">
-            <Clock size={22} />
-            <div>
-              <b>Orders for this menu are closed.</b> Nimmi is cooking the accepted orders now. The next menu will be
-              posted here soon. Pickles, podis and sweets can still be requested from the full menu below.
+              . Pickles, podis and sweets can be requested from the full menu below.
             </div>
           </div>
         )}

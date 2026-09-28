@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, Copy, Download, Send } from 'lucide-react';
-import { CATEGORIES, MENU, MENU_BY_ID } from '../data/kitchen';
+import { CATEGORIES, KITCHEN, MENU, MENU_BY_ID } from '../data/kitchen';
 import { buildBroadcast, inr } from '../lib/helpers';
 import { Brand } from './Header';
 
@@ -29,6 +29,8 @@ function initialState(current) {
   const tomorrow = istParts(new Date(Date.now() + 864e5)).date;
   return { deliveryDate: tomorrow, cutoffDate: today, cutoffTime: '20:00', slots: '', note: '', picked: {} };
 }
+
+const sheetUrl = KITCHEN.menuSheetId && `https://docs.google.com/spreadsheets/d/${KITCHEN.menuSheetId}/edit`;
 
 export default function PostMenu({ current }) {
   const [s, setS] = useState(() => initialState(current));
@@ -97,11 +99,23 @@ export default function PostMenu({ current }) {
         <div className="wrap">
           <span className="eyebrow">For Nimmi</span>
           <h1 className="h-display" style={{ fontSize: 'clamp(1.8rem, 3vw, 2.4rem)', margin: '6px 0 8px' }}>Post today's menu</h1>
-          <p className="muted" style={{ maxWidth: '70ch', marginBottom: 28 }}>
-            Tick what you'll cook, set the cutoff, then <b>download todays-menu.json</b> and upload it to the website's{' '}
-            <code>public</code> folder (or your host), replacing the old file. Copy the WhatsApp text to post in your
-            customer group.
-          </p>
+          {sheetUrl ? (
+            <p className="muted" style={{ maxWidth: '70ch', marginBottom: 28 }}>
+              Post the menu from your <b>menu sheet</b>: set the delivery date and tick what you'll cook. The website
+              picks it up within a few minutes.{' '}
+              <a className="btn btn-leaf btn-sm" href={sheetUrl} target="_blank" rel="noreferrer">
+                Open menu sheet
+              </a>
+              <br />
+              This page fills in from the menu on the website, so you can copy a WhatsApp message for your customer group.
+            </p>
+          ) : (
+            <p className="muted" style={{ maxWidth: '70ch', marginBottom: 28 }}>
+              Tick what you'll cook, set the cutoff, then <b>download todays-menu.json</b> and upload it to the website's{' '}
+              <code>public</code> folder (or your host), replacing the old file. Copy the WhatsApp text to post in your
+              customer group.
+            </p>
+          )}
 
           <div className="admin-grid">
             <div className="panel">
@@ -166,18 +180,20 @@ export default function PostMenu({ current }) {
                   </a>
                 </div>
               </div>
-              <div className="panel">
-                <span className="panel-title">4 · Website file</span>
-                <textarea className="out" readOnly value={jsonText} style={{ minHeight: 160 }} />
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                  <button className="btn btn-leaf btn-sm" onClick={download} disabled={!json.items.length}>
-                    <Download size={14} /> Download todays-menu.json
-                  </button>
-                  <button className="btn btn-ghost btn-sm" onClick={() => copy(jsonText, 'json')}>
-                    <Copy size={14} /> {copied === 'json' ? 'Copied!' : 'Copy'}
-                  </button>
+              {!sheetUrl && (
+                <div className="panel">
+                  <span className="panel-title">4 · Website file</span>
+                  <textarea className="out" readOnly value={jsonText} style={{ minHeight: 160 }} />
+                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                    <button className="btn btn-leaf btn-sm" onClick={download} disabled={!json.items.length}>
+                      <Download size={14} /> Download todays-menu.json
+                    </button>
+                    <button className="btn btn-ghost btn-sm" onClick={() => copy(jsonText, 'json')}>
+                      <Copy size={14} /> {copied === 'json' ? 'Copied!' : 'Copy'}
+                    </button>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>

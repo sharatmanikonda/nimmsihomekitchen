@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { KITCHEN, MENU_BY_ID } from '../data/kitchen';
+import { addDays, istDate, loadMenu } from './menuSource';
 
 export const inr = (n) => '₹' + n.toLocaleString('en-IN');
 
 const TZ = 'Asia/Kolkata';
+const DAY_MS = 864e5;
 
 export function formatDay(isoDate, opts = { weekday: 'long', day: 'numeric', month: 'short' }) {
   // isoDate like 2026-09-28 — anchor at noon IST so the weekday never shifts.
@@ -38,43 +40,39 @@ export function countdown(ms) {
   return h > 0 ? `${h}h ${pad(m)}m ${pad(sec)}s` : `${pad(m)}m ${pad(sec)}s`;
 }
 
-// Loads public/todays-menu.json. Returns { status, menu } where menu.items are
-// resolved against the catalogue (unknown ids are dropped).
-export function useTodaysMenu() {
+// Loads the posted menu (see lib/menuSource.js) and re-checks every few minutes so a menu
+// Nimmi posts while the page is open shows up. Returns { status, menu } where menu.items are
+// resolved against the catalogue (unknown ids are dropped) and menu is null if none is posted.
+export function useTodaysMenu(refreshMs = 3 * 60e3) {
   const [state, setState] = useState({ status: 'loading', menu: null });
   useEffect(() => {
-    fetch(`${KITCHEN.todaysMenuUrl}?t=${Date.now()}`, { cache: 'no-store' })
-      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-      .then((raw) => {
-        const items = (raw.items || [])
-          .filter((it) => MENU_BY_ID[it.id])
-          .map((it) => ({ ...MENU_BY_ID[it.id], limit: it.limit }));
-        setState({ status: 'ready', menu: { ...raw, items } });
-      })
-      .catch(() => setState({ status: 'error', menu: null }));
-  }, []);
+    let last = null;
+    const load = () =>
+      loadMenu()
+        .then((raw) => {
+          const key = JSON.stringify(raw);
+          if (key === last) return;
+          last = key;
+          const items = (raw?.items || []).filter((it) => MENU_BY_ID[it.id]).map((it) => ({ ...MENU_BY_ID[it.id], limit: it.limit }));
+          setState({ status: 'ready', menu: items.length ? { ...raw, items } : null });
+        })
+        .catch((err) => {
+          console.error('Could not load the menu:', err);
+          if (last === null) setState({ status: 'error', menu: null });
+        });
+    load();
+    const t = setInterval(load, refreshMs);
+    return () => clearInterval(t);
+  }, [refreshMs]);
   return state;
 }
 
-const DAY_MS = 864e5;
-
-// How many days a menu must move forward so its cutoff is in the future again.
-// 0 while the posted cutoff is still ahead, or when the menu sets "autoRoll": false.
-export function rollDays(menu, now) {
-  if (!menu || menu.autoRoll === false) return 0;
-  const cutoff = new Date(menu.cutoff).getTime();
-  return now < cutoff ? 0 : Math.floor((now - cutoff) / DAY_MS) + 1;
-}
-
-const addDays = (isoDate, n) => new Date(Date.parse(`${isoDate}T00:00:00Z`) + n * DAY_MS).toISOString().slice(0, 10);
-
-// Moves the delivery date and cutoff forward by whole days, keeping the cutoff time
-// and the cutoff-to-delivery gap. IST has no DST, so adding 24h keeps the clock time.
-export function rollMenu(menu, days) {
-  if (!menu || !days) return menu;
-  const cutoff = new Date(new Date(menu.cutoff).getTime() + days * DAY_MS);
-  const ist = new Date(cutoff.getTime() + 5.5 * 3600e3).toISOString().slice(0, 19);
-  return { ...menu, deliveryDate: addDays(menu.deliveryDate, days), cutoff: `${ist}+05:30` };
+// The date the next menu is expected for, shown while no menu is open for orders: the day after
+// the last posted delivery date, or later if that menu's cutoff was days ago.
+export function nextMenuDate(posted, now) {
+  if (!posted) return addDays(istDate(now), 1);
+  const days = Math.floor((now - new Date(posted.cutoff).getTime()) / DAY_MS) + 1;
+  return addDays(posted.deliveryDate, Math.max(1, days));
 }
 
 export const waLink = (text) => `https://wa.me/${KITCHEN.whatsappNumber}?text=${encodeURIComponent(text)}`;
