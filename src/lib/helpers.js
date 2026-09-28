@@ -71,7 +71,14 @@ export function useTodaysMenu(refreshMs = 3 * 60e3) {
   return { ...state, reload: () => setAttempt((n) => n + 1) };
 }
 
-// The date the next menu is expected for, shown while no menu is open for orders: the day after
+// When a posted menu stops being shown: midnight IST at the end of its delivery day (or its
+// cutoff, if that is somehow later). Between the cutoff and then, it shows as "orders closed".
+export function menuShownUntil(posted) {
+  const endOfDay = Date.parse(`${addDays(posted.deliveryDate, 1)}T00:00:00+05:30`);
+  return Math.max(endOfDay, new Date(posted.cutoff).getTime());
+}
+
+// The date the next menu is expected for, shown while no menu is on the site: the day after
 // the last posted delivery date, or later if that menu's cutoff was days ago.
 export function nextMenuDate(posted, now) {
   if (!posted) return addDays(istDate(now), 1);

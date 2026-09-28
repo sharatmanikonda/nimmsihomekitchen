@@ -1,6 +1,6 @@
 import { countdown, formatCutoff, formatDay } from '../lib/helpers';
 
-export default function Hero({ menu, nextDate, status, now, cutoffMs }) {
+export default function Hero({ menu, nextDate, status, now, ordersOpen, cutoffMs }) {
   return (
     <section className="hero">
       <div className="hero-grid">
@@ -33,8 +33,12 @@ export default function Hero({ menu, nextDate, status, now, cutoffMs }) {
                     <span className="muted">{menu.items.length} items</span>
                   </div>
                   <div className="row">
-                    <span className="muted">Order by {formatCutoff(menu.cutoff)}</span>
-                    <span className="timer">{countdown(cutoffMs - now)}</span>
+                    <span className="muted">
+                      {ordersOpen ? `Order by ${formatCutoff(menu.cutoff)}` : `Orders closed at ${formatCutoff(menu.cutoff)}`}
+                    </span>
+                    <span className={`timer ${ordersOpen ? '' : 'closed'}`}>
+                      {ordersOpen ? countdown(cutoffMs - now) : 'Orders closed'}
+                    </span>
                   </div>
                 </>
               ) : (

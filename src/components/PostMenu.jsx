@@ -91,8 +91,8 @@ function SheetPostMenu({ posted, status, now, checkedAt, reload }) {
         {!open && (
           <div className="closed-banner">
             <div>
-              <b>This menu's cutoff ({formatCutoff(posted.cutoff)}) has passed,</b> so customers can't order from it. Set
-              a new Delivery date in the sheet.
+              <b>This menu's cutoff ({formatCutoff(posted.cutoff)}) has passed.</b> Customers can still see it until the
+              end of {formatDay(posted.deliveryDate)}, but can't order. For a new menu, set a new Delivery date.
             </div>
           </div>
         )}

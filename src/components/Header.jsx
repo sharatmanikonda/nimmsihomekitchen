@@ -1,6 +1,6 @@
 import { ShoppingBag } from 'lucide-react';
 import { KITCHEN } from '../data/kitchen';
-import { countdown, formatDay } from '../lib/helpers';
+import { countdown, formatCutoff, formatDay } from '../lib/helpers';
 
 export function Brand() {
   return (
@@ -14,7 +14,7 @@ export function Brand() {
   );
 }
 
-function StatusBar({ menu, nextDate, status, now, cutoffMs }) {
+function StatusBar({ menu, nextDate, status, now, ordersOpen, cutoffMs }) {
   let content;
   if (status === 'loading') content = <span>Loading today's menu…</span>;
   else if (!menu)
@@ -23,6 +23,15 @@ function StatusBar({ menu, nextDate, status, now, cutoffMs }) {
         <span className="dot closed" />
         <span>
           The menu for <b>{formatDay(nextDate)}</b> is coming soon. Pickles, podis and sweets can be requested on WhatsApp.
+        </span>
+      </>
+    );
+  else if (!ordersOpen)
+    content = (
+      <>
+        <span className="dot closed" />
+        <span>
+          Menu for <b>{formatDay(menu.deliveryDate)}</b> · orders closed at {formatCutoff(menu.cutoff)}
         </span>
       </>
     );

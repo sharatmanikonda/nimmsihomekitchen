@@ -16,7 +16,8 @@ export default function TodaysMenu({ menu, nextDate, status, ordersOpen, cart, s
           </div>
           {menu && (
             <p className="muted">
-              <Clock size={15} style={{ verticalAlign: '-2px' }} /> Order by <b>{formatCutoff(menu.cutoff)}</b>.
+              <Clock size={15} style={{ verticalAlign: '-2px' }} /> {ordersOpen ? 'Order by' : 'Orders closed at'}{' '}
+              <b>{formatCutoff(menu.cutoff)}</b>.
               {menu.deliverySlots?.length ? ` Delivery: ${menu.deliverySlots.join(', ')}.` : ''}
             </p>
           )}
@@ -34,6 +35,16 @@ export default function TodaysMenu({ menu, nextDate, status, ordersOpen, cart, s
                 ask on WhatsApp
               </a>
               . Pickles, podis and sweets can be requested from the full menu below.
+            </div>
+          </div>
+        )}
+
+        {menu && !ordersOpen && (
+          <div className="closed-banner">
+            <Clock size={22} />
+            <div>
+              <b>Orders for this menu are closed.</b> This is what Nimmi is cooking for {formatDay(menu.deliveryDate)}.
+              Watch this page or the WhatsApp group for the next menu.
             </div>
           </div>
         )}

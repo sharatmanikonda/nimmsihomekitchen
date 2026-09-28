@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { nextMenuDate, useNow, useTodaysMenu } from './lib/helpers';
+import { menuShownUntil, nextMenuDate, useNow, useTodaysMenu } from './lib/helpers';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import HowItWorks from './components/HowItWorks';
@@ -37,8 +37,9 @@ export default function App() {
   const route = useHashRoute();
   const { status, menu: posted, checkedAt, reload } = useTodaysMenu();
   const now = useNow();
-  // A menu is shown only until its cutoff. After that the site waits for Nimmi to post the next one.
-  const menu = posted && now < new Date(posted.cutoff).getTime() ? posted : null;
+  // A menu stays up until the end of its delivery day; orders close at its cutoff.
+  // After that the site shows "coming soon" until Nimmi posts the next one.
+  const menu = posted && now < menuShownUntil(posted) ? posted : null;
   const nextDate = menu ? null : nextMenuDate(posted, now);
   const [cart, setCart] = useState({});
   const [drawerOpen, setDrawerOpen] = useState(false);
