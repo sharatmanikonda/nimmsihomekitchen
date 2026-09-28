@@ -24,7 +24,7 @@ async function loadJsonMenu() {
 
 // ---- Google Sheet ----------------------------------------------------------
 // The sheet must be shared as "Anyone with the link: Viewer". Two tabs:
-//   Menu     — header row with "id", "Today" (tick box) and "Limit"; one row per dish.
+//   Menu     — header row with "id", "Today" (Yes/No or tick box) and "Limit"; one row per dish.
 //   Settings — header row "Delivery date", "Cutoff time", "Cutoff date", "Delivery slots", "Note",
 //              values in row 2. Each setting has its own column because the Sheets query API
 //              drops cells whose type doesn't match the rest of their column.

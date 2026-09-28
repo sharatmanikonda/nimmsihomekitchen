@@ -1,24 +1,24 @@
-id,Dish,Today,Limit
-avakaya,Andhra Avakaya (Mango) Pachadi,FALSE,
-gongura-pachadi,Gongura Pachadi,FALSE,
-tomato-thokku,Andhra Tomato Thokku Pachadi,FALSE,
-usirikaya,Usirikaya Pachadi,FALSE,
-allam,Homestyle Allam Pachadi,FALSE,
-chicken-pickle,Boneless Spiced Chicken Pickle,FALSE,
-prawns-pachadi,Coastal Spiced Prawns Pachadi,FALSE,
-idli-podi,Traditional Idli Milagai Podi,FALSE,
-nallakaram,Nallakaram,FALSE,
-karivepaku,Karivepaku Podi,FALSE,
-kandi,Kandi Podi,FALSE,
-sunnundalu,Neyyi Sunnundalu,FALSE,
-ariselu,Neyyi Ariselu,FALSE,
-kobbari,Kobbari Laddu,FALSE,
-nuvvula,Nuvvula Chimmili Undalu,FALSE,
-gongura-chicken,Gongura Chicken Curry,FALSE,
-natu-kodi,Telangana Natu Kodi Curry,FALSE,
-mutton,Homestyle Andhra Mutton Curry,FALSE,
-royyala,Andhra Royyala Iguru,FALSE,
-chekkalu,Traditional Andhra Rice Chekkalu,FALSE,
-gavvalu,Crispy Gavvalu,FALSE,
-multigrain-batter,Special Multigrain Booster Batter,FALSE,
-idli-batter,Traditional Cultured Idli/Dosa Batter,FALSE,
+Dish,Category,Today,Limit,id
+Andhra Avakaya (Mango) Pachadi,Pickles,,,avakaya
+Gongura Pachadi,Pickles,,,gongura-pachadi
+Andhra Tomato Thokku Pachadi,Pickles,,,tomato-thokku
+Usirikaya Pachadi,Pickles,,,usirikaya
+Homestyle Allam Pachadi,Pickles,,,allam
+Boneless Spiced Chicken Pickle,Pickles,,,chicken-pickle
+Coastal Spiced Prawns Pachadi,Pickles,,,prawns-pachadi
+Traditional Idli Milagai Podi,Podis,,,idli-podi
+Nallakaram,Podis,,,nallakaram
+Karivepaku Podi,Podis,,,karivepaku
+Kandi Podi,Podis,,,kandi
+Neyyi Sunnundalu,Sweets,,,sunnundalu
+Neyyi Ariselu,Sweets,,,ariselu
+Kobbari Laddu,Sweets,,,kobbari
+Nuvvula Chimmili Undalu,Sweets,,,nuvvula
+Gongura Chicken Curry,Pre-order curries,,,gongura-chicken
+Telangana Natu Kodi Curry,Pre-order curries,,,natu-kodi
+Homestyle Andhra Mutton Curry,Pre-order curries,,,mutton
+Andhra Royyala Iguru,Pre-order curries,,,royyala
+Traditional Andhra Rice Chekkalu,Savories,,,chekkalu
+Crispy Gavvalu,Savories,,,gavvalu
+Special Multigrain Booster Batter,Fresh batters,,,multigrain-batter
+Traditional Cultured Idli/Dosa Batter,Fresh batters,,,idli-batter
