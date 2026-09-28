@@ -1,9 +1,10 @@
-import { KITCHEN } from '../data/kitchen';
+import { CATEGORIES, KITCHEN, MENU } from '../data/kitchen';
 
 // Where the day's menu comes from: Nimmi's Google Sheet when KITCHEN.menuSheetId is set,
 // otherwise public/todays-menu.json. Both return the same shape:
-//   { deliveryDate: 'YYYY-MM-DD', cutoff: ISO string, deliverySlots: [], note: '', items: [{ id, limit? }] }
-// or null when no menu has been posted.
+//   { deliveryDate: 'YYYY-MM-DD', cutoff: ISO string, deliverySlots: [], note: '', items }
+// or null when no menu has been posted. JSON items are catalogue ids ({ id, limit? }); sheet
+// items are complete dishes ({ id, name, unit, price, ... }) because Nimmi types her own.
 
 const DAY_MS = 864e5;
 const pad = (n) => String(n).padStart(2, '0');
@@ -24,7 +25,8 @@ async function loadJsonMenu() {
 
 // ---- Google Sheet ----------------------------------------------------------
 // The sheet must be shared as "Anyone with the link: Viewer". Two tabs:
-//   Menu     — header row with "id", "Today" (Yes/No or tick box) and "Limit"; one row per dish.
+//   Menu     — header row "Dish", "Portion", "Price", "Today" (Yes/No), "Limit", "Type" (Veg/Non-veg),
+//              "Category"; one row per dish. Only rows with Today = Yes and a price are shown.
 //   Settings — header row "Delivery date", "Cutoff time", "Cutoff date", "Delivery slots", "Note",
 //              values in row 2. Each setting has its own column because the Sheets query API
 //              drops cells whose type doesn't match the rest of their column.
@@ -68,30 +70,58 @@ function toTime(cell) {
 
 const isTicked = (cell) => cell?.v === true || /^(true|yes|y|x|✓|✔|1)$/i.test(text(cell));
 
+const slug = (name) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+const MENU_BY_NAME = Object.fromEntries(MENU.map((m) => [m.name.toLowerCase(), m]));
+const CAT_BY_LABEL = Object.fromEntries(CATEGORIES.map((c) => [c.label.toLowerCase(), c.id]));
+
+function sheetDish(r, col) {
+  const name = text(r[col.dish]);
+  const price = parseFloat(text(r[col.price]).replace(/[^\d.]/g, '')); // "85", "₹85", "85/-"
+  if (!name || !(price > 0)) return null;
+  // A dish with the same name as a catalogue item keeps its id, so the full menu can mark it.
+  const known = MENU_BY_NAME[name.toLowerCase()] || {};
+  const catText = text(r[col.category]);
+  const type = text(r[col.type]);
+  const limit = parseInt(text(r[col.limit]), 10);
+  return {
+    ...known,
+    id: known.id || slug(name),
+    name,
+    price,
+    unit: text(r[col.portion]) || known.unit || '1 portion',
+    nonVeg: type ? /non/i.test(type) : !!known.nonVeg,
+    cat: CAT_BY_LABEL[catText.toLowerCase()] || known.cat,
+    catLabel: CAT_BY_LABEL[catText.toLowerCase()] ? undefined : catText || undefined,
+    limit: limit > 0 ? limit : undefined,
+  };
+}
+
 async function loadSheetMenu(sheetId) {
   const [menuTab, settingsTab] = await Promise.all([fetchTab(sheetId, 'Menu'), fetchTab(sheetId, 'Settings')]);
 
-  const [iId, iToday, iLimit] = ['id', 'today', 'limit'].map((l) => menuTab.labels.indexOf(l));
-  if (iId < 0 || iToday < 0) throw new Error('Menu tab needs "id" and "Today" columns');
-  const items = menuTab.rows
-    .filter((r) => isTicked(r[iToday]) && text(r[iId]))
-    .map((r) => {
-      const limit = parseInt(text(r[iLimit]), 10);
-      return limit > 0 ? { id: text(r[iId]), limit } : { id: text(r[iId]) };
-    });
+  const col = Object.fromEntries(
+    ['dish', 'portion', 'price', 'today', 'limit', 'type', 'category'].map((l) => [l, menuTab.labels.indexOf(l)])
+  );
+  if (col.dish < 0 || col.price < 0 || col.today < 0) throw new Error('Menu tab needs "Dish", "Price" and "Today" columns');
+  const ticked = menuTab.rows.filter((r) => isTicked(r[col.today]));
+  const items = ticked.map((r) => sheetDish(r, col)).filter(Boolean);
+  // Dishes marked Yes but missing a name or price, so the owner page can point them out.
+  const skipped = ticked.filter((r) => !sheetDish(r, col)).map((r) => text(r[col.dish]) || '(no name)');
 
   const row = settingsTab.rows[0] || [];
   const setting = (label) => row[settingsTab.labels.indexOf(label)];
   const deliveryDate = toIsoDate(setting('delivery date'));
   if (!deliveryDate || !items.length) return null;
 
-  const cutoffDate = toIsoDate(setting('cutoff date')) || addDays(deliveryDate, -1);
-  const cutoffTime = toTime(setting('cutoff time')) || '20:00';
+  // Nimmi's usual pattern is same-day: "for lunch … order by 10:30am".
+  const cutoffDate = toIsoDate(setting('cutoff date')) || deliveryDate;
+  const cutoffTime = toTime(setting('cutoff time')) || '10:30';
   return {
     deliveryDate,
     cutoff: `${cutoffDate}T${cutoffTime}:00+05:30`,
     deliverySlots: text(setting('delivery slots')).split(/\n|\|/).map((s) => s.trim()).filter(Boolean),
     note: text(setting('note')),
     items,
+    skipped,
   };
 }

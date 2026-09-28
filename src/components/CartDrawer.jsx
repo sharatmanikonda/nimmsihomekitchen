@@ -118,7 +118,7 @@ export default function CartDrawer({ menu, lines, total, ordersOpen, setQty, onC
                       <div className="nm">{l.name}</div>
                       <div className="un">
                         {inr(l.price)} / {l.unit}
-                        {l.cat === 'curries' && ` · ${l.qty * 500 >= 1000 ? `${(l.qty * 500) / 1000} kg` : '500g'} total`}
+                        {l.cat === 'curries' && l.unit === '500g' && ` · ${l.qty * 500 >= 1000 ? `${(l.qty * 500) / 1000} kg` : '500g'} total`}
                       </div>
                     </div>
                     <div className="amt">{inr(l.qty * l.price)}</div>

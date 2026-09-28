@@ -35,7 +35,7 @@ function useHashRoute() {
 
 export default function App() {
   const route = useHashRoute();
-  const { status, menu: posted } = useTodaysMenu();
+  const { status, menu: posted, checkedAt, reload } = useTodaysMenu();
   const now = useNow();
   // A menu is shown only until its cutoff. After that the site waits for Nimmi to post the next one.
   const menu = posted && now < new Date(posted.cutoff).getTime() ? posted : null;
@@ -87,7 +87,7 @@ export default function App() {
     if (!cart[item.id] && q > 0) setToast(`Added ${item.name}`);
   };
 
-  if (route === '#/post-menu') return <PostMenu current={menu} />;
+  if (route === '#/post-menu') return <PostMenu posted={posted} status={status} now={now} checkedAt={checkedAt} reload={reload} />;
 
   const shared = { menu, nextDate, status, now, ordersOpen, cutoffMs };
 

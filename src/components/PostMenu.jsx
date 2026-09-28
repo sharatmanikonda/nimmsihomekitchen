@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, Copy, Download, Send } from 'lucide-react';
+import { ArrowLeft, Copy, Download, ExternalLink, RefreshCw, Send } from 'lucide-react';
 import { CATEGORIES, KITCHEN, MENU, MENU_BY_ID } from '../data/kitchen';
-import { buildBroadcast, inr } from '../lib/helpers';
+import { buildBroadcast, formatCutoff, formatDay, formatTime, inr } from '../lib/helpers';
 import { Brand } from './Header';
 
-// Owner tool: build the day's menu, then download todays-menu.json for the site
-// and copy a ready-made WhatsApp broadcast for customers.
+// Owner tool at #/post-menu. With a menu sheet: check what the sheet will show on the site, then
+// share a ready-made message to the WhatsApp group. Without one: build the menu here and
+// download todays-menu.json for the site.
 
 const pad = (n) => String(n).padStart(2, '0');
 const istParts = (d) => {
@@ -31,8 +32,165 @@ function initialState(current) {
 }
 
 const sheetUrl = KITCHEN.menuSheetId && `https://docs.google.com/spreadsheets/d/${KITCHEN.menuSheetId}/edit`;
+const siteUrl = () => window.location.origin + import.meta.env.BASE_URL;
 
-export default function PostMenu({ current }) {
+async function copyText(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function AdminHeader() {
+  return (
+    <header className="header">
+      <div className="wrap">
+        <Brand />
+        <a href="#top" className="btn btn-ghost btn-sm" style={{ marginLeft: 'auto' }} onClick={() => (window.location.hash = '')}>
+          <ArrowLeft size={15} /> Back to site
+        </a>
+      </div>
+    </header>
+  );
+}
+
+export default function PostMenu(props) {
+  return sheetUrl ? <SheetPostMenu {...props} /> : <FilePostMenu current={props.posted} />;
+}
+
+function SheetPostMenu({ posted, status, now, checkedAt, reload }) {
+  const [copied, setCopied] = useState(false);
+  const open = !!posted && now < new Date(posted.cutoff).getTime();
+  const broadcast = useMemo(() => (posted ? buildBroadcast(posted, siteUrl()) : ''), [posted]);
+
+  let check;
+  if (status === 'loading') check = <p className="muted">Reading your menu sheet…</p>;
+  else if (status === 'error')
+    check = (
+      <div className="closed-banner">
+        <div>
+          <b>The website can't read the menu sheet.</b> In the sheet, check that Share is set to "Anyone with the link"
+          and that the tabs are still called Menu and Settings.
+        </div>
+      </div>
+    );
+  else if (!posted)
+    check = (
+      <div className="closed-banner">
+        <div>
+          <b>No menu in the sheet yet.</b> Fill in the Delivery date in Settings and set Today to "Yes" for at least one
+          dish that has a price.
+        </div>
+      </div>
+    );
+  else
+    check = (
+      <>
+        {!open && (
+          <div className="closed-banner">
+            <div>
+              <b>This menu's cutoff ({formatCutoff(posted.cutoff)}) has passed,</b> so customers can't order from it. Set
+              a new Delivery date in the sheet.
+            </div>
+          </div>
+        )}
+        <div>
+          <div style={{ fontWeight: 800, fontSize: '1.1rem' }}>{formatDay(posted.deliveryDate)}</div>
+          <div className="fine">
+            Order by {formatCutoff(posted.cutoff)}
+            {posted.deliverySlots?.length ? ` · ${posted.deliverySlots.join(', ')}` : ''}
+          </div>
+        </div>
+        <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+          {posted.items.map((it) => (
+            <li key={it.id} className="pick" style={{ gridTemplateColumns: '1fr auto' }}>
+              <span>
+                {it.name} <span className="fine">· {it.unit}{it.nonVeg ? ' · non-veg' : ''}{it.limit ? ` · only ${it.limit}` : ''}</span>
+              </span>
+              <b>{inr(it.price)}</b>
+            </li>
+          ))}
+        </ul>
+        {posted.note && <div className="fine">Note: {posted.note}</div>}
+        {posted.skipped?.length > 0 && (
+          <div className="closed-banner">
+            <div>
+              <b>Not shown on the website:</b> {posted.skipped.join(', ')}. These are set to "Yes" but have no price.
+            </div>
+          </div>
+        )}
+      </>
+    );
+
+  return (
+    <>
+      <AdminHeader />
+      <main className="admin">
+        <div className="wrap" style={{ maxWidth: 720 }}>
+          <span className="eyebrow">For Nimmi</span>
+          <h1 className="h-display" style={{ fontSize: 'clamp(1.8rem, 3vw, 2.4rem)', margin: '6px 0 24px' }}>Post today's menu</h1>
+
+          <div style={{ display: 'grid', gap: 20 }}>
+            <div className="panel">
+              <span className="panel-title">1 · Update your menu sheet</span>
+              <p className="muted" style={{ margin: 0 }}>
+                In <b>Settings</b>, pick the Delivery date and cutoff time. In <b>Menu</b>, set Today to "Yes" for each dish
+                you're making, with its portion and price. Add a new row for any new dish.
+              </p>
+              <div>
+                <a className="btn btn-leaf btn-sm" href={sheetUrl} target="_blank" rel="noreferrer">
+                  <ExternalLink size={14} /> Open menu sheet
+                </a>
+              </div>
+            </div>
+
+            <div className="panel">
+              <span className="panel-title">2 · Check the menu on the website</span>
+              {check}
+              <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+                <button className="btn btn-ghost btn-sm" onClick={reload}>
+                  <RefreshCw size={14} /> Check again
+                </button>
+                {checkedAt && <span className="fine">Last checked {formatTime(new Date(checkedAt).toISOString())}. Sheet changes can take a minute to show.</span>}
+              </div>
+            </div>
+
+            <div className="panel">
+              <span className="panel-title">3 · Share on WhatsApp</span>
+              {open ? (
+                <>
+                  <textarea className="out" readOnly value={broadcast} />
+                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                    <a className="btn btn-wa btn-sm" href={`https://wa.me/?text=${encodeURIComponent(broadcast)}`} target="_blank" rel="noreferrer">
+                      <Send size={14} /> Share to WhatsApp group
+                    </a>
+                    <button
+                      className="btn btn-ghost btn-sm"
+                      onClick={async () => {
+                        if (await copyText(broadcast)) {
+                          setCopied(true);
+                          setTimeout(() => setCopied(false), 1800);
+                        }
+                      }}
+                    >
+                      <Copy size={14} /> {copied ? 'Copied!' : 'Copy text'}
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <p className="muted" style={{ margin: 0 }}>The message appears here once step 2 shows a menu that's open for orders.</p>
+              )}
+            </div>
+          </div>
+        </div>
+      </main>
+    </>
+  );
+}
+
+function FilePostMenu({ current }) {
   const [s, setS] = useState(() => initialState(current));
   const [copied, setCopied] = useState('');
   useEffect(() => {
@@ -61,19 +219,15 @@ export default function PostMenu({ current }) {
 
   const broadcast = useMemo(() => {
     const resolved = { ...json, items: json.items.map((i) => ({ ...MENU_BY_ID[i.id], limit: i.limit })) };
-    return buildBroadcast(resolved, window.location.origin + import.meta.env.BASE_URL);
+    return buildBroadcast(resolved, siteUrl());
   }, [json]);
 
   const jsonText = JSON.stringify(json, null, 2);
 
   const copy = async (text, which) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopied(which);
-      setTimeout(() => setCopied(''), 1800);
-    } catch {
-      setCopied('');
-    }
+    if (!(await copyText(text))) return setCopied('');
+    setCopied(which);
+    setTimeout(() => setCopied(''), 1800);
   };
 
   const download = () => {
@@ -87,35 +241,16 @@ export default function PostMenu({ current }) {
 
   return (
     <>
-      <header className="header">
-        <div className="wrap">
-          <Brand />
-          <a href="#top" className="btn btn-ghost btn-sm" style={{ marginLeft: 'auto' }} onClick={() => (window.location.hash = '')}>
-            <ArrowLeft size={15} /> Back to site
-          </a>
-        </div>
-      </header>
+      <AdminHeader />
       <main className="admin">
         <div className="wrap">
           <span className="eyebrow">For Nimmi</span>
           <h1 className="h-display" style={{ fontSize: 'clamp(1.8rem, 3vw, 2.4rem)', margin: '6px 0 8px' }}>Post today's menu</h1>
-          {sheetUrl ? (
-            <p className="muted" style={{ maxWidth: '70ch', marginBottom: 28 }}>
-              Post the menu from your <b>menu sheet</b>: set the delivery date and tick what you'll cook. The website
-              picks it up within a few minutes.{' '}
-              <a className="btn btn-leaf btn-sm" href={sheetUrl} target="_blank" rel="noreferrer">
-                Open menu sheet
-              </a>
-              <br />
-              This page fills in from the menu on the website, so you can copy a WhatsApp message for your customer group.
-            </p>
-          ) : (
-            <p className="muted" style={{ maxWidth: '70ch', marginBottom: 28 }}>
-              Tick what you'll cook, set the cutoff, then <b>download todays-menu.json</b> and upload it to the website's{' '}
-              <code>public</code> folder (or your host), replacing the old file. Copy the WhatsApp text to post in your
-              customer group.
-            </p>
-          )}
+          <p className="muted" style={{ maxWidth: '70ch', marginBottom: 28 }}>
+            Tick what you'll cook, set the cutoff, then <b>download todays-menu.json</b> and upload it to the website's{' '}
+            <code>public</code> folder (or your host), replacing the old file. Copy the WhatsApp text to post in your
+            customer group.
+          </p>
 
           <div className="admin-grid">
             <div className="panel">
@@ -180,20 +315,18 @@ export default function PostMenu({ current }) {
                   </a>
                 </div>
               </div>
-              {!sheetUrl && (
-                <div className="panel">
-                  <span className="panel-title">4 · Website file</span>
-                  <textarea className="out" readOnly value={jsonText} style={{ minHeight: 160 }} />
-                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                    <button className="btn btn-leaf btn-sm" onClick={download} disabled={!json.items.length}>
-                      <Download size={14} /> Download todays-menu.json
-                    </button>
-                    <button className="btn btn-ghost btn-sm" onClick={() => copy(jsonText, 'json')}>
-                      <Copy size={14} /> {copied === 'json' ? 'Copied!' : 'Copy'}
-                    </button>
-                  </div>
+              <div className="panel">
+                <span className="panel-title">4 · Website file</span>
+                <textarea className="out" readOnly value={jsonText} style={{ minHeight: 160 }} />
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                  <button className="btn btn-leaf btn-sm" onClick={download} disabled={!json.items.length}>
+                    <Download size={14} /> Download todays-menu.json
+                  </button>
+                  <button className="btn btn-ghost btn-sm" onClick={() => copy(jsonText, 'json')}>
+                    <Copy size={14} /> {copied === 'json' ? 'Copied!' : 'Copy'}
+                  </button>
                 </div>
-              )}
+              </div>
             </div>
           </div>
         </div>

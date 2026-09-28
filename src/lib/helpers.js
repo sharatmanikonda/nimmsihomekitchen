@@ -41,20 +41,24 @@ export function countdown(ms) {
 }
 
 // Loads the posted menu (see lib/menuSource.js) and re-checks every few minutes so a menu
-// Nimmi posts while the page is open shows up. Returns { status, menu } where menu.items are
-// resolved against the catalogue (unknown ids are dropped) and menu is null if none is posted.
+// Nimmi posts while the page is open shows up. Returns { status, menu, checkedAt, reload };
+// menu is null if none is posted. reload() checks again right away.
 export function useTodaysMenu(refreshMs = 3 * 60e3) {
   const [state, setState] = useState({ status: 'loading', menu: null });
+  const [attempt, setAttempt] = useState(0);
   useEffect(() => {
     let last = null;
     const load = () =>
       loadMenu()
         .then((raw) => {
           const key = JSON.stringify(raw);
-          if (key === last) return;
+          if (key === last) return setState((s) => ({ ...s, checkedAt: Date.now() }));
           last = key;
-          const items = (raw?.items || []).filter((it) => MENU_BY_ID[it.id]).map((it) => ({ ...MENU_BY_ID[it.id], limit: it.limit }));
-          setState({ status: 'ready', menu: items.length ? { ...raw, items } : null });
+          // Sheet items are complete dishes; JSON items are catalogue ids with an optional limit.
+          const items = (raw?.items || [])
+            .map((it) => (it.name ? it : MENU_BY_ID[it.id] && { ...MENU_BY_ID[it.id], limit: it.limit }))
+            .filter(Boolean);
+          setState({ status: 'ready', menu: items.length ? { ...raw, items } : null, checkedAt: Date.now() });
         })
         .catch((err) => {
           console.error('Could not load the menu:', err);
@@ -63,8 +67,8 @@ export function useTodaysMenu(refreshMs = 3 * 60e3) {
     load();
     const t = setInterval(load, refreshMs);
     return () => clearInterval(t);
-  }, [refreshMs]);
-  return state;
+  }, [refreshMs, attempt]);
+  return { ...state, reload: () => setAttempt((n) => n + 1) };
 }
 
 // The date the next menu is expected for, shown while no menu is open for orders: the day after
@@ -108,20 +112,21 @@ export function buildEnquiryMessage(item) {
   return `Hi Nimmi, is *${item.name}* (${item.unit}, ${inr(item.price)}) available? When is the next batch?`;
 }
 
+// The group message, written the way Nimmi posts: greeting, dishes with portion and price, cutoff.
 export function buildBroadcast(menu, siteUrl) {
+  const slots = menu.deliverySlots || [];
+  const forWhen = slots.length === 1 ? ` for ${slots[0].split('·')[0].trim().toLowerCase()}` : '';
   const out = [];
-  out.push(`*${KITCHEN.name} — Menu for ${formatDay(menu.deliveryDate)}*`);
-  out.push(`Order by *${formatCutoff(menu.cutoff)}*`);
-  if (menu.note) out.push('', menu.note);
+  out.push(`Hi all, menu${forWhen} on *${formatDay(menu.deliveryDate)}*:`);
   out.push('');
   menu.items.forEach((it) => {
-    const tag = it.nonVeg ? ' (Non-veg)' : '';
-    const lim = it.limit ? ` — only ${it.limit}` : '';
-    out.push(`• ${it.name}${tag} — ${inr(it.price)} / ${it.unit}${lim}`);
+    const tags = [it.nonVeg && 'non-veg', it.limit && `only ${it.limit}`].filter(Boolean);
+    out.push(`• ${it.name} (${it.unit} ${inr(it.price)}/-)${tags.length ? ` — ${tags.join(', ')}` : ''}`);
   });
+  if (menu.note) out.push('', menu.note);
   out.push('');
-  if (menu.deliverySlots?.length) out.push(`Delivery: ${menu.deliverySlots.join(' | ')}`);
-  out.push('Only accepted orders are cooked — fresh, just for you.');
+  out.push(`If interested, order by *${formatCutoff(menu.cutoff)}*.`);
+  if (slots.length > 1) out.push(`Delivery: ${slots.join(' | ')}`);
   if (siteUrl) out.push(`Order here: ${siteUrl}`);
   return out.join('\n');
 }

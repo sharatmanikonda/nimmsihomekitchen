@@ -50,13 +50,13 @@ export default function TodaysMenu({ menu, nextDate, status, ordersOpen, cart, s
             {menu.items.map((item) => (
               <article className="dish" key={item.id}>
                 <div className="dish-top">
-                  <span className="dish-cat">{catLabel[item.cat]}</span>
+                  <span className="dish-cat">{item.catLabel || catLabel[item.cat]}</span>
                   <VegMark nonVeg={item.nonVeg} />
                 </div>
                 <h3>{item.name}</h3>
                 {item.sub && <p className="sub">{item.sub}</p>}
                 <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                  {item.cat === 'curries' && <span className="chip gold">Min. 500g</span>}
+                  {item.cat === 'curries' && item.unit === '500g' && <span className="chip gold">Min. 500g</span>}
                   {item.limit && <span className="chip warn">Only {item.limit} available</span>}
                 </div>
                 <div className="dish-bottom">

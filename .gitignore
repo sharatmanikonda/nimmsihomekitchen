@@ -4,3 +4,4 @@ old details/
 src_previous/
 .env*
 *.log
+sheet-template/*.xlsx

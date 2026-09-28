@@ -9,7 +9,7 @@ export const KITCHEN = {
   // Nimmi's Google Sheet for the daily menu: the long id between /d/ and /edit in its URL.
   // The sheet must be shared as "Anyone with the link: Viewer". See sheet-template/README.md.
   // Leave empty to load public/todays-menu.json instead.
-  menuSheetId: '1YR0LtfCsnslWtcHFyP7Zxxj3spN4AhXkc383PcXo_6s',
+  menuSheetId: '1xII0bb0NRHMJnSCfZUBXA3cUg_WJ_iFrUVP9zXKETpA',
   // Used only when menuSheetId is empty.
   todaysMenuUrl: `${BASE}todays-menu.json`,
   deliveryNote: 'Delivery charges, if any, are confirmed on WhatsApp along with your order.',
