@@ -1,0 +1,6 @@
+node_modules/
+dist/
+old details/
+src_previous/
+.env*
+*.log

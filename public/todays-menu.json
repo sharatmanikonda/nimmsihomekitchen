@@ -1,0 +1,18 @@
+{
+  "postedOn": "2026-09-27",
+  "deliveryDate": "2026-09-28",
+  "cutoff": "2026-09-27T20:00:00+05:30",
+  "deliverySlots": ["Lunch · 12:00 – 2:00 PM", "Evening · 5:00 – 7:30 PM"],
+  "note": "Monday special: Gongura Chicken and Natu Kodi curries. Fresh batters ground Sunday night.",
+  "items": [
+    { "id": "gongura-chicken", "limit": 8 },
+    { "id": "natu-kodi", "limit": 5 },
+    { "id": "idli-batter" },
+    { "id": "multigrain-batter" },
+    { "id": "avakaya" },
+    { "id": "gongura-pachadi" },
+    { "id": "idli-podi" },
+    { "id": "sunnundalu", "limit": 10 },
+    { "id": "chekkalu" }
+  ]
+}
