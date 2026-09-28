@@ -1,22 +1,24 @@
 // Business settings. Edit these once; they rarely change.
+const BASE = import.meta.env.BASE_URL;
+
 export const KITCHEN = {
   name: "Nimmi's Home Kitchen",
   tagline: 'Homemade meals with authentic flavours',
   // Nimmi's WhatsApp number with country code, digits only.
   whatsappNumber: '919652318485',
   // Where the daily menu is loaded from (see public/todays-menu.json).
-  todaysMenuUrl: '/todays-menu.json',
+  todaysMenuUrl: `${BASE}todays-menu.json`,
   deliveryNote: 'Delivery charges, if any, are confirmed on WhatsApp along with your order.',
   paymentNote: 'Pay by UPI after Nimmi accepts your order.',
 };
 
 export const CATEGORIES = [
-  { id: 'pickles', label: 'Pickles', native: 'Pachadi', blurb: 'Small-batch Andhra pickles, packed in 250g jars.', image: '/images/pickles_showcase.jpg' },
-  { id: 'podis', label: 'Podis', native: 'Spice powders', blurb: 'Traditional roasted powders for rice, idli and dosa.', image: '/images/podis_showcase.jpg' },
-  { id: 'sweets', label: 'Sweets', native: 'Homemade', blurb: 'Laddus and festive sweets made in the home kitchen.', image: '/images/sweets_showcase.jpg' },
-  { id: 'curries', label: 'Pre-order curries', native: 'Min. 500g', blurb: 'Cooked to order. Sold in 500g portions, minimum one portion.', image: '/images/curries_showcase.jpg' },
-  { id: 'snacks', label: 'Savories', native: 'Snacks', blurb: 'Crispy tea-time snacks, fried fresh.', image: '/images/savories_showcase.jpg' },
-  { id: 'batters', label: 'Fresh batters', native: 'Idli / Dosa', blurb: 'Ground and fermented fresh for your order.', image: '/images/batters_showcase.jpg' },
+  { id: 'pickles', label: 'Pickles', native: 'Pachadi', blurb: 'Small-batch Andhra pickles, packed in 250g jars.', image: `${BASE}images/pickles_showcase.jpg` },
+  { id: 'podis', label: 'Podis', native: 'Spice powders', blurb: 'Traditional roasted powders for rice, idli and dosa.', image: `${BASE}images/podis_showcase.jpg` },
+  { id: 'sweets', label: 'Sweets', native: 'Homemade', blurb: 'Laddus and festive sweets made in the home kitchen.', image: `${BASE}images/sweets_showcase.jpg` },
+  { id: 'curries', label: 'Pre-order curries', native: 'Min. 500g', blurb: 'Cooked to order. Sold in 500g portions, minimum one portion.', image: `${BASE}images/curries_showcase.jpg` },
+  { id: 'snacks', label: 'Savories', native: 'Snacks', blurb: 'Crispy tea-time snacks, fried fresh.', image: `${BASE}images/savories_showcase.jpg` },
+  { id: 'batters', label: 'Fresh batters', native: 'Idli / Dosa', blurb: 'Ground and fermented fresh for your order.', image: `${BASE}images/batters_showcase.jpg` },
 ];
 
 // The full "frequent items" catalogue. Today's menu picks from these ids.

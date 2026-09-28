@@ -22,7 +22,7 @@ export default function Hero({ menu, status, now, ordersOpen, cutoffMs }) {
         </div>
 
         <div className="hero-photo">
-          <img src="/images/hero_culinary.jpg" alt="Homemade curries, podis, pickles and laddus on a wooden table" />
+          <img src={`${import.meta.env.BASE_URL}images/hero_culinary.jpg`} alt="Homemade curries, podis, pickles and laddus on a wooden table" />
           {status !== 'loading' && (
             <div className="today-ticket">
               {menu ? (
