@@ -104,11 +104,11 @@ export function buildOrderMessage({ ref, menu, lines, total, form }) {
     out.push(`${i + 1}. ${l.name} — ${l.qty} × ${l.unit} = ${inr(l.qty * l.price)}`);
   });
   out.push('');
-  out.push(`*Total: ${inr(total)}* (before delivery charges)`);
+  out.push(`*Total: ${inr(total)}*`);
   out.push('');
   out.push(`Name: ${form.name}`);
   out.push(`Phone: ${form.phone}`);
-  out.push(`${form.pickup ? 'Pickup from kitchen' : `Address: ${form.address}`}`);
+  out.push("I'll pick up from Nimmi's kitchen.");
   if (form.notes.trim()) out.push(`Notes: ${form.notes.trim()}`);
   out.push('');
   out.push('Please confirm if you can accept this order. Thank you!');
@@ -133,7 +133,8 @@ export function buildBroadcast(menu, siteUrl) {
   if (menu.note) out.push('', menu.note);
   out.push('');
   out.push(`If interested, order by *${formatCutoff(menu.cutoff)}*.`);
-  if (slots.length > 1) out.push(`Delivery: ${slots.join(' | ')}`);
+  if (slots.length > 1) out.push(`Pickup: ${slots.join(' | ')}`);
+  out.push('Pickup only, from our kitchen in the community.');
   if (siteUrl) out.push(`Order here: ${siteUrl}`);
   return out.join('\n');
 }

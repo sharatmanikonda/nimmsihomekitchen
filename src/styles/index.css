@@ -147,6 +147,13 @@ a { color: inherit; }
 .hero h1 { font-size: clamp(2.4rem, 5.2vw, 4.2rem); color: var(--ink); }
 .hero .lede { font-family: var(--serif); font-size: clamp(1.15rem, 1.6vw, 1.35rem); line-height: 1.45; max-width: 30ch; color: #3a2c17; }
 .hero-cta { display: flex; gap: 12px; flex-wrap: wrap; }
+.join-group { display: inline-flex; align-items: center; gap: 8px; align-self: flex-start; font-size: .92rem; color: var(--leaf-deep); text-decoration: underline; text-underline-offset: 3px; }
+.join-group svg { flex: none; }
+.join-group:hover { color: var(--ink); }
+
+.bulk-card { display: grid; grid-template-columns: auto 1fr auto; gap: 20px; align-items: center; background: var(--card); border: 1px solid var(--line); border-radius: var(--r-md); padding: 24px; }
+.bulk-icon { color: var(--leaf); }
+@media (max-width: 720px) { .bulk-card { grid-template-columns: 1fr; } .bulk-card .btn { justify-self: start; } }
 .hero-photo { position: relative; min-height: 320px; }
 .hero-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 

@@ -1,4 +1,4 @@
-import { MessageCircle } from 'lucide-react';
+import { MessageCircle, Users } from 'lucide-react';
 import { CATEGORIES, KITCHEN } from '../data/kitchen';
 import { waLink } from '../lib/helpers';
 
@@ -16,9 +16,14 @@ export default function Footer() {
               Fresh, made-to-order Andhra home cooking. A new menu is posted every day. Only accepted orders are
               cooked.
             </p>
-            <a className="btn btn-wa" style={{ justifySelf: 'start' }} href={waLink('Hi Nimmi!')} target="_blank" rel="noreferrer">
-              <MessageCircle size={17} /> Chat on WhatsApp
-            </a>
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+              <a className="btn btn-wa" href={KITCHEN.whatsappGroupUrl} target="_blank" rel="noreferrer">
+                <Users size={17} /> Join our WhatsApp group
+              </a>
+              <a className="btn btn-ghost" style={{ color: '#fff' }} href={waLink('Hi Nimmi!')} target="_blank" rel="noreferrer">
+                <MessageCircle size={17} /> Chat with Nimmi
+              </a>
+            </div>
           </div>
           <div>
             <h4>Menu</h4>
@@ -35,7 +40,8 @@ export default function Footer() {
               <li><a href="#how">How it works</a></li>
               <li><a href="#faq">FAQ</a></li>
               <li>{KITCHEN.paymentNote}</li>
-              <li>{KITCHEN.deliveryNote}</li>
+              <li>{KITCHEN.pickupNote}</li>
+              <li><a href="#bulk">Special &amp; bulk orders (delivery available)</a></li>
             </ul>
           </div>
         </div>

@@ -6,6 +6,7 @@ import HowItWorks from './components/HowItWorks';
 import TodaysMenu from './components/TodaysMenu';
 import FullMenu from './components/FullMenu';
 import About from './components/About';
+import BulkOrders from './components/BulkOrders';
 import Faq from './components/Faq';
 import Footer from './components/Footer';
 import CartDrawer from './components/CartDrawer';
@@ -100,6 +101,7 @@ export default function App() {
         <HowItWorks />
         <TodaysMenu {...shared} cart={cart} setQty={setQty} />
         <FullMenu {...shared} todayIds={todayIds} cart={cart} setQty={setQty} />
+        <BulkOrders />
         <About />
         <Faq />
       </main>

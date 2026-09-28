@@ -1,3 +1,5 @@
+import { Users } from 'lucide-react';
+import { KITCHEN } from '../data/kitchen';
 import { countdown, formatCutoff, formatDay } from '../lib/helpers';
 
 export default function Hero({ menu, nextDate, status, now, ordersOpen, cutoffMs }) {
@@ -12,13 +14,16 @@ export default function Hero({ menu, nextDate, status, now, ordersOpen, cutoffMs
             Only for you.
           </h1>
           <p className="lede">
-            A new menu every day. Order before the cutoff, and Nimmi cooks only the orders she accepts, then delivers
-            them fresh.
+            A new menu every day. Order before the cutoff, and Nimmi cooks only the orders she accepts, fresh for you to
+            pick up.
           </p>
           <div className="hero-cta">
             <a href="#today" className="btn btn-ink">See today's menu</a>
             <a href="#menu" className="btn btn-ghost">Pickles, podis &amp; sweets</a>
           </div>
+          <a className="join-group" href={KITCHEN.whatsappGroupUrl} target="_blank" rel="noreferrer">
+            <Users size={16} /> New here? <b>Join our WhatsApp group</b> to get the menu every day
+          </a>
         </div>
 
         <div className="hero-photo">

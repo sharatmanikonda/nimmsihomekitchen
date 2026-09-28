@@ -6,13 +6,18 @@ export const KITCHEN = {
   tagline: 'Homemade meals with authentic flavours',
   // Nimmi's WhatsApp number with country code, digits only.
   whatsappNumber: '919652318485',
+  // Invite link to the customer WhatsApp group where Nimmi posts the daily menu.
+  whatsappGroupUrl: 'https://chat.whatsapp.com/HYTa1rFQYdv1SJ27o5qCTe',
   // Nimmi's Google Sheet for the daily menu: the long id between /d/ and /edit in its URL.
   // The sheet must be shared as "Anyone with the link: Viewer". See sheet-template/README.md.
   // Leave empty to load public/todays-menu.json instead.
   menuSheetId: '1xII0bb0NRHMJnSCfZUBXA3cUg_WJ_iFrUVP9zXKETpA',
   // Used only when menuSheetId is empty.
   todaysMenuUrl: `${BASE}todays-menu.json`,
-  deliveryNote: 'Delivery charges, if any, are confirmed on WhatsApp along with your order.',
+  // Daily menu orders are for the community and are collected by the customer.
+  pickupNote: "Daily orders are for our community and are picked up from Nimmi's kitchen.",
+  // Only special / bulk orders can be delivered, at an extra charge.
+  bulkNote: 'Special and bulk orders can be delivered. Delivery charges are extra and are confirmed with you on WhatsApp before the order is accepted.',
   paymentNote: 'Pay by UPI after Nimmi accepts your order.',
 };
 
@@ -63,7 +68,19 @@ export const MENU_BY_ID = Object.fromEntries(MENU.map((m) => [m.id, m]));
 export const FAQS = [
   {
     q: 'How does ordering work?',
-    a: "Nimmi posts the day's menu with a cutoff time. Add what you want and send the order on WhatsApp before the cutoff. Nimmi replies to accept it. Only accepted orders are cooked, so everything reaches you fresh.",
+    a: "Nimmi posts the day's menu with a cutoff time. Add what you want and send the order on WhatsApp before the cutoff. Nimmi replies to accept it. Only accepted orders are cooked, so everything is fresh when you pick it up.",
+  },
+  {
+    q: 'Do you deliver?',
+    a: "Daily menu orders are for our community and are picked up from Nimmi's kitchen at the time you choose. Delivery is available only for special and bulk orders, with extra delivery charges.",
+  },
+  {
+    q: 'Can I place a special or bulk order?',
+    a: 'Yes. For functions, festivals or large quantities, message Nimmi on WhatsApp with what you need and when. She will confirm the price, and the delivery charges if you want it delivered, before accepting the order.',
+  },
+  {
+    q: 'How do I hear about the daily menu?',
+    a: 'Join our WhatsApp group using the "Join our WhatsApp group" button on this page. Nimmi posts the menu and the order cutoff there every day, and it is always on this website too.',
   },
   {
     q: 'What happens after the cutoff?',
