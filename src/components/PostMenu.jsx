@@ -59,7 +59,7 @@ export default function PostMenu({ current }) {
 
   const broadcast = useMemo(() => {
     const resolved = { ...json, items: json.items.map((i) => ({ ...MENU_BY_ID[i.id], limit: i.limit })) };
-    return buildBroadcast(resolved, window.location.origin);
+    return buildBroadcast(resolved, window.location.origin + import.meta.env.BASE_URL);
   }, [json]);
 
   const jsonText = JSON.stringify(json, null, 2);

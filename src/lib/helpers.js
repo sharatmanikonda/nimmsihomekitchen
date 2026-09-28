@@ -56,6 +56,27 @@ export function useTodaysMenu() {
   return state;
 }
 
+const DAY_MS = 864e5;
+
+// How many days a menu must move forward so its cutoff is in the future again.
+// 0 while the posted cutoff is still ahead, or when the menu sets "autoRoll": false.
+export function rollDays(menu, now) {
+  if (!menu || menu.autoRoll === false) return 0;
+  const cutoff = new Date(menu.cutoff).getTime();
+  return now < cutoff ? 0 : Math.floor((now - cutoff) / DAY_MS) + 1;
+}
+
+const addDays = (isoDate, n) => new Date(Date.parse(`${isoDate}T00:00:00Z`) + n * DAY_MS).toISOString().slice(0, 10);
+
+// Moves the delivery date and cutoff forward by whole days, keeping the cutoff time
+// and the cutoff-to-delivery gap. IST has no DST, so adding 24h keeps the clock time.
+export function rollMenu(menu, days) {
+  if (!menu || !days) return menu;
+  const cutoff = new Date(new Date(menu.cutoff).getTime() + days * DAY_MS);
+  const ist = new Date(cutoff.getTime() + 5.5 * 3600e3).toISOString().slice(0, 19);
+  return { ...menu, deliveryDate: addDays(menu.deliveryDate, days), cutoff: `${ist}+05:30` };
+}
+
 export const waLink = (text) => `https://wa.me/${KITCHEN.whatsappNumber}?text=${encodeURIComponent(text)}`;
 
 export function makeOrderRef(deliveryDate) {

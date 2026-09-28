@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useNow, useTodaysMenu } from './lib/helpers';
+import { rollDays, rollMenu, useNow, useTodaysMenu } from './lib/helpers';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import HowItWorks from './components/HowItWorks';
@@ -35,8 +35,12 @@ function useHashRoute() {
 
 export default function App() {
   const route = useHashRoute();
-  const { status, menu } = useTodaysMenu();
+  const { status, menu: posted } = useTodaysMenu();
   const now = useNow();
+  // Once the posted cutoff passes, carry the menu over to the next day automatically.
+  // Keyed on the day count so the menu object only changes when the dates actually move.
+  const shift = rollDays(posted, now);
+  const menu = useMemo(() => rollMenu(posted, shift), [posted, shift]);
   const [cart, setCart] = useState({});
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [toast, setToast] = useState(null);
