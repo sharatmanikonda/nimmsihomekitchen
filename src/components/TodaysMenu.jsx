@@ -18,7 +18,8 @@ export default function TodaysMenu({ menu, nextDate, status, ordersOpen, cart, s
             <p className="muted">
               <Clock size={15} style={{ verticalAlign: '-2px' }} /> {ordersOpen ? 'Order by' : 'Orders closed at'}{' '}
               <b>{formatCutoff(menu.cutoff)}</b>.
-              {menu.deliverySlots?.length ? ` Pickup: ${menu.deliverySlots.join(', ')}.` : ''} Pickup only.
+              {menu.deliverySlots?.length ? ` Pickup: ${menu.deliverySlots.join(', ')}.` : ''} Pickup only.{' '}
+              {KITCHEN.communityNote}
             </p>
           )}
         </div>
@@ -29,11 +30,8 @@ export default function TodaysMenu({ menu, nextDate, status, ordersOpen, cart, s
           <div className="closed-banner">
             <MessageCircle size={22} />
             <div>
-              <b>Menu coming soon.</b> Nimmi hasn't posted what she's cooking for {formatDay(nextDate)} yet.{' '}
-              <a href={KITCHEN.whatsappGroupUrl} target="_blank" rel="noreferrer">
-                Join our WhatsApp group
-              </a>{' '}
-              to see it as soon as it's posted, or{' '}
+              <b>Menu coming soon.</b> Nimmi hasn't posted what she's cooking for {formatDay(nextDate)} yet. Check
+              back soon, or{' '}
               <a href={waLink("Hi Nimmi, what's on the menu next?")} target="_blank" rel="noreferrer">
                 ask Nimmi
               </a>
@@ -47,11 +45,7 @@ export default function TodaysMenu({ menu, nextDate, status, ordersOpen, cart, s
             <Clock size={22} />
             <div>
               <b>Orders for this menu are closed.</b> This is what Nimmi is cooking for {formatDay(menu.deliveryDate)}.
-              Watch this page or{' '}
-              <a href={KITCHEN.whatsappGroupUrl} target="_blank" rel="noreferrer">
-                join our WhatsApp group
-              </a>{' '}
-              for the next menu.
+              Watch this page for the next menu.
             </div>
           </div>
         )}

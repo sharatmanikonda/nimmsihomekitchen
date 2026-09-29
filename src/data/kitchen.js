@@ -2,22 +2,21 @@
 const BASE = import.meta.env.BASE_URL;
 
 export const KITCHEN = {
-  name: "Nimmi's Home Kitchen",
+  name: 'NY Home Kitchen',
   tagline: 'Homemade meals with authentic flavours',
   // Nimmi's WhatsApp number with country code, digits only.
   whatsappNumber: '919652318485',
-  // Invite link to the customer WhatsApp group where Nimmi posts the daily menu.
-  whatsappGroupUrl: 'https://chat.whatsapp.com/HYTa1rFQYdv1SJ27o5qCTe',
   // Nimmi's Google Sheet for the daily menu: the long id between /d/ and /edit in its URL.
   // The sheet must be shared as "Anyone with the link: Viewer". See sheet-template/README.md.
   // Leave empty to load public/todays-menu.json instead.
   menuSheetId: '1xII0bb0NRHMJnSCfZUBXA3cUg_WJ_iFrUVP9zXKETpA',
   // Used only when menuSheetId is empty.
   todaysMenuUrl: `${BASE}todays-menu.json`,
-  // Daily menu orders are for the community and are collected by the customer.
-  pickupNote: "Daily orders are for our community and are picked up from Nimmi's kitchen.",
+  // The daily menu is only for members of the community, who collect their own orders.
+  communityNote: 'The daily menu is for community members only.',
+  pickupNote: "Daily menu orders are for community members only and are picked up from Nimmi's kitchen.",
   // Only special / bulk orders can be delivered, at an extra charge.
-  bulkNote: 'Special and bulk orders can be delivered. Delivery charges are extra and are confirmed with you on WhatsApp before the order is accepted.',
+  bulkNote: 'Special and bulk orders are open to everyone and can be delivered. Delivery charges are extra and are confirmed with you on WhatsApp before the order is accepted.',
   paymentNote: 'Pay by UPI after Nimmi accepts your order.',
 };
 
@@ -72,15 +71,15 @@ export const FAQS = [
   },
   {
     q: 'Do you deliver?',
-    a: "Daily menu orders are for our community and are picked up from Nimmi's kitchen at the time you choose. Delivery is available only for special and bulk orders, with extra delivery charges.",
+    a: "Daily menu orders are for community members only and are picked up from Nimmi's kitchen at the time you choose. Delivery is available only for special and bulk orders, with extra delivery charges.",
   },
   {
     q: 'Can I place a special or bulk order?',
     a: 'Yes. For functions, festivals or large quantities, message Nimmi on WhatsApp with what you need and when. She will confirm the price, and the delivery charges if you want it delivered, before accepting the order.',
   },
   {
-    q: 'How do I hear about the daily menu?',
-    a: 'Join our WhatsApp group using the "Join our WhatsApp group" button on this page. Nimmi posts the menu and the order cutoff there every day, and it is always on this website too.',
+    q: 'Who can order from the daily menu?',
+    a: 'The daily menu is for community members only. It is posted on this website every day with the order cutoff. Not in the community? Chat with Nimmi about a special or bulk order.',
   },
   {
     q: 'What happens after the cutoff?',

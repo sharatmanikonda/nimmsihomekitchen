@@ -1,4 +1,4 @@
-import { MessageCircle, Users } from 'lucide-react';
+import { MessageCircle } from 'lucide-react';
 import { CATEGORIES, KITCHEN } from '../data/kitchen';
 import { waLink } from '../lib/helpers';
 
@@ -17,10 +17,7 @@ export default function Footer() {
               cooked.
             </p>
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-              <a className="btn btn-wa" href={KITCHEN.whatsappGroupUrl} target="_blank" rel="noreferrer">
-                <Users size={17} /> Join our WhatsApp group
-              </a>
-              <a className="btn btn-ghost" style={{ color: '#fff' }} href={waLink('Hi Nimmi!')} target="_blank" rel="noreferrer">
+              <a className="btn btn-wa" href={waLink('Hi Nimmi!')} target="_blank" rel="noreferrer">
                 <MessageCircle size={17} /> Chat with Nimmi
               </a>
             </div>

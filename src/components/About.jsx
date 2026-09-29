@@ -4,7 +4,7 @@ export default function About() {
   return (
     <section className="section" id="about">
       <div className="wrap about-grid">
-        <img src={`${import.meta.env.BASE_URL}images/nimmi_poster.png`} alt="Nimmi's Home Kitchen flyer: a South Indian meal on a banana leaf" loading="lazy" />
+        <img src={`${import.meta.env.BASE_URL}images/nimmi_poster.png`} alt="NY Home Kitchen flyer: a South Indian meal on a banana leaf" loading="lazy" />
         <div>
           <span className="eyebrow">About the kitchen</span>
           <h2 className="h-display" style={{ fontSize: 'clamp(1.9rem, 3.4vw, 2.8rem)', margin: '6px 0 18px' }}>

@@ -1,4 +1,4 @@
-import { Truck } from 'lucide-react';
+import { MessageCircle, Truck } from 'lucide-react';
 import { KITCHEN } from '../data/kitchen';
 import { waLink } from '../lib/helpers';
 
@@ -25,7 +25,7 @@ export default function BulkOrders() {
             </p>
           </div>
           <a className="btn btn-wa" href={waLink(ENQUIRY)} target="_blank" rel="noreferrer">
-            Enquire on WhatsApp
+            <MessageCircle size={17} /> Chat with Nimmi
           </a>
         </div>
       </div>

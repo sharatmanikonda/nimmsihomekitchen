@@ -21,9 +21,9 @@ export default function Hero({ menu, nextDate, status, now, ordersOpen, cutoffMs
             <a href="#today" className="btn btn-ink">See today's menu</a>
             <a href="#menu" className="btn btn-ghost">Pickles, podis &amp; sweets</a>
           </div>
-          <a className="join-group" href={KITCHEN.whatsappGroupUrl} target="_blank" rel="noreferrer">
-            <Users size={16} /> New here? <b>Join our WhatsApp group</b> to get the menu every day
-          </a>
+          <p className="community-note">
+            <Users size={16} /> {KITCHEN.communityNote}
+          </p>
         </div>
 
         <div className="hero-photo">

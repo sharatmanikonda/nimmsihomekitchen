@@ -7,7 +7,7 @@ export function Brand() {
     <a href="#top" className="brand" aria-label={KITCHEN.name}>
       <span className="brand-mark" aria-hidden>N</span>
       <span className="brand-name">
-        Nimmi's Home Kitchen
+        {KITCHEN.name}
         <small>{KITCHEN.tagline}</small>
       </span>
     </a>
